@@ -376,6 +376,7 @@ class Upgrader {
 
   /// Only called by [UpgradeAlert].
   void checkVersion({
+    required bool showForDebug,
     required BuildContext context,
     Future<void> Function({
       required BuildContext context,
@@ -395,7 +396,7 @@ class Upgrader {
         print(
             'upgrader: shouldDisplayReleaseNotes: ${shouldDisplayReleaseNotes()}');
       }
-      if (shouldDisplay) {
+      if (shouldDisplay || showForDebug) {
         _displayed = true;
         Future.delayed(const Duration(milliseconds: 0), () {
           _showDialogOrBuildCustomOverlay(

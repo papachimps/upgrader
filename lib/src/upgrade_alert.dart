@@ -9,6 +9,7 @@ import 'package:upgrader/upgrader.dart';
 class UpgradeAlert extends UpgradeBase {
   /// The [child] contained by the widget.
   final Widget? child;
+  final bool showForDebug;
   final Future<void> Function({
     required BuildContext context,
     required String? title,
@@ -26,6 +27,7 @@ class UpgradeAlert extends UpgradeBase {
     Upgrader? upgrader,
     this.child,
     this.overLayBuilder,
+    this.showForDebug = false,
   }) : super(upgrader ?? Upgrader.sharedInstance, key: key);
 
   /// Describes the part of the user interface represented by this widget.
@@ -42,6 +44,7 @@ class UpgradeAlert extends UpgradeBase {
               processed.data != null &&
               processed.data!) {
             upgrader.checkVersion(
+              showForDebug: showForDebug,
               context: context,
               overLayBuilder: overLayBuilder,
             );
