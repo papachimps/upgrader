@@ -16,9 +16,9 @@ class UpgradeAlert extends UpgradeBase {
     required String message,
     required String? releaseNotes,
     required bool canDismissDialog,
-    required bool Function()? onUserLater,
-    required bool Function()? onUserDownload,
-    required bool Function()? onUserIgnore,
+    required void Function()? onUserLater,
+    required void Function()? onUserDownload,
+    required void Function()? onUserIgnore,
   })? overLayBuilder;
 
   /// Creates a new [UpgradeAlert].

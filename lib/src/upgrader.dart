@@ -384,9 +384,9 @@ class Upgrader {
       required String message,
       required String? releaseNotes,
       required bool canDismissDialog,
-      required bool Function()? onUserLater,
-      required bool Function()? onUserDownload,
-      required bool Function()? onUserIgnore,
+      required void Function()? onUserLater,
+      required void Function()? onUserDownload,
+      required void Function()? onUserIgnore,
     })?
         overLayBuilder,
   }) {
@@ -555,9 +555,9 @@ class Upgrader {
       required String message,
       required String? releaseNotes,
       required bool canDismissDialog,
-      required bool Function()? onUserLater,
-      required bool Function()? onUserDownload,
-      required bool Function()? onUserIgnore,
+      required void Function()? onUserLater,
+      required void Function()? onUserDownload,
+      required void Function()? onUserIgnore,
     })?
         overLayBuilder,
   }) {
@@ -578,9 +578,9 @@ class Upgrader {
         message: message,
         title: title,
         releaseNotes: releaseNotes,
-        onUserDownload: onUpdate,
-        onUserLater: onLater,
-        onUserIgnore: onIgnore,
+        onUserDownload: () => onUserUpdated(context, !blocked()),
+        onUserLater: () => onUserLater(context, true),
+        onUserIgnore: () => onUserIgnored(context, true),
       );
     } else {
       showDialog(
