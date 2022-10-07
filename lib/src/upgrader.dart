@@ -375,7 +375,20 @@ class Upgrader {
   }
 
   /// Only called by [UpgradeAlert].
-  void checkVersion({required BuildContext context}) {
+  void checkVersion({
+    required BuildContext context,
+    Future<void> Function({
+      required BuildContext context,
+      required String? title,
+      required String message,
+      required String? releaseNotes,
+      required bool canDismissDialog,
+      required bool Function()? onUserLater,
+      required bool Function()? onUserDownload,
+      required bool Function()? onUserIgnore,
+    })?
+        overLayBuilder,
+  }) {
     if (!_displayed) {
       final shouldDisplay = shouldDisplayUpgrade();
       if (debugLogging) {
@@ -385,12 +398,14 @@ class Upgrader {
       if (shouldDisplay) {
         _displayed = true;
         Future.delayed(const Duration(milliseconds: 0), () {
-          _showDialog(
-              context: context,
-              title: messages.message(UpgraderMessage.title),
-              message: message(),
-              releaseNotes: shouldDisplayReleaseNotes() ? _releaseNotes : null,
-              canDismissDialog: canDismissDialog);
+          _showDialogOrBuildCustomOverlay(
+            context: context,
+            title: messages.message(UpgraderMessage.title),
+            message: message(),
+            releaseNotes: shouldDisplayReleaseNotes() ? _releaseNotes : null,
+            canDismissDialog: canDismissDialog,
+            overLayBuilder: overLayBuilder,
+          );
         });
       }
     }
@@ -527,12 +542,24 @@ class Upgrader {
     return code;
   }
 
-  void _showDialog(
-      {required BuildContext context,
+  void _showDialogOrBuildCustomOverlay({
+    required BuildContext context,
+    required String? title,
+    required String message,
+    required String? releaseNotes,
+    required bool canDismissDialog,
+    Function({
+      required BuildContext context,
       required String? title,
       required String message,
       required String? releaseNotes,
-      required bool canDismissDialog}) {
+      required bool canDismissDialog,
+      required bool Function()? onUserLater,
+      required bool Function()? onUserDownload,
+      required bool Function()? onUserIgnore,
+    })?
+        overLayBuilder,
+  }) {
     if (debugLogging) {
       print('upgrader: showDialog title: $title');
       print('upgrader: showDialog message: $message');
@@ -542,18 +569,48 @@ class Upgrader {
     // Save the date/time as the last time alerted.
     saveLastAlerted();
 
-    showDialog(
-      barrierDismissible: canDismissDialog,
-      context: context,
-      builder: (BuildContext context) {
-        return WillPopScope(
-          onWillPop: () async => _shouldPopScope(),
-          child: dialogStyle == UpgradeDialogStyle.material
-              ? _alertDialog(title!, message, releaseNotes, context)
-              : _cupertinoAlertDialog(title!, message, releaseNotes, context),
-        );
-      },
-    );
+// /* CUSTOM
+    if (overLayBuilder != null) {
+      overLayBuilder(
+        context: context,
+        canDismissDialog: canDismissDialog,
+        message: message,
+        title: title,
+        releaseNotes: releaseNotes,
+        onUserDownload: onUpdate,
+        onUserLater: onLater,
+        onUserIgnore: onIgnore,
+      );
+    } else {
+      showDialog(
+        barrierDismissible: canDismissDialog,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async => _shouldPopScope(),
+            child: dialogStyle == UpgradeDialogStyle.material
+                ? _alertDialog(title!, message, releaseNotes, context)
+                : _cupertinoAlertDialog(title!, message, releaseNotes, context),
+          );
+        },
+      );
+    }
+// */ CUSTOM
+
+/* orginal
+      showDialog(
+        barrierDismissible: canDismissDialog,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async => _shouldPopScope(),
+            child: dialogStyle == UpgradeDialogStyle.material
+                ? _alertDialog(title!, message, releaseNotes, context)
+                : _cupertinoAlertDialog(title!, message, releaseNotes, context),
+          );
+        },
+      );
+*/
   }
 
   /// Called when the user taps outside of the dialog and [canDismissDialog]
