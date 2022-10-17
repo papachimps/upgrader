@@ -376,12 +376,12 @@ class Upgrader {
 
   /// Only called by [UpgradeAlert].
   void checkVersion({
-    required bool showForDebug,
     required BuildContext context,
     Future<void> Function({
       required BuildContext context,
       required String? title,
-      required String message,
+      String? installedVersion,
+      String? updateVersion,
       required String? releaseNotes,
       required bool canDismissDialog,
       required void Function()? onUserLater,
@@ -396,7 +396,7 @@ class Upgrader {
         print(
             'upgrader: shouldDisplayReleaseNotes: ${shouldDisplayReleaseNotes()}');
       }
-      if (shouldDisplay || showForDebug) {
+      if (shouldDisplay) {
         _displayed = true;
         Future.delayed(const Duration(milliseconds: 0), () {
           _showDialogOrBuildCustomOverlay(
@@ -552,7 +552,8 @@ class Upgrader {
     Function({
       required BuildContext context,
       required String? title,
-      required String message,
+      String? installedVersion,
+      String? updateVersion,
       required String? releaseNotes,
       required bool canDismissDialog,
       required void Function()? onUserLater,
@@ -575,7 +576,8 @@ class Upgrader {
       overLayBuilder(
         context: context,
         canDismissDialog: canDismissDialog,
-        message: message,
+        installedVersion: currentInstalledVersion(),
+        updateVersion: currentAppStoreVersion(),
         title: title,
         releaseNotes: releaseNotes,
         onUserDownload: () => onUserUpdated(context, !blocked()),
